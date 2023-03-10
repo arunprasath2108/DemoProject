@@ -29,6 +29,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     private var loginLabelConstraint = [NSLayoutConstraint]()
     private var signUpConstraint = [NSLayoutConstraint]()
     
+    private var activeTextField: UITextField?
+    
     
     private lazy var userNameTextField: UITextField = {
         let textField = UITextField()
@@ -77,28 +79,139 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         return signUpButton
     }()
     
+    let customField = DynamicFieldView()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemPink
-        confirmPasswordTextField.delegate = self
         configureUI()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        confirmPasswordTextField.delegate = self
+    }
+    
+    let stackView = UIStackView()
+    
     private func configureUI() {
         configureBoxView()
-        configureUserNameLabel()
+        configureStackView()
         configureUserNameField()
-        configureEmailIdLabel()
-        configureEmailIdTextField()
-        configureNewPasswordLabel()
-        configureNewPasswordTextField()
-        configureConfirmPassLabel()
-        configureConfirmPassTextField()
-        configureLabel()          //label -> "already have an account?"
-        configureLogInLabel()
-        configureSignUpButton()
+        configureEmailIdField()
+        
+        
+//        configureUserNameLabel()
+//        configureUserNameField()
+//        configureEmailIdLabel()
+//        configureEmailIdTextField()
+//        configureNewPasswordLabel()
+//        configureNewPasswordTextField()
+//        configureConfirmPassLabel()
+//        configureConfirmPassTextField()
+//        configureLabel()          //label -> "already have an account?"
+//        configureLogInLabel()
+//        configureSignUpButton()
+//        configureCell()
     }
+    
+    func configureStackView() {
+        boxView.addSubview(stackView)
+        stackView.backgroundColor = .lightGray
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.center = boxView.center
+        stackView.distribution = .equalCentering
+        stackView.axis = .vertical
+        
+        
+        NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: boxView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: boxView.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: boxView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: boxView.bottomAnchor)
+        ])
+    }
+        
+
+    func configureUserNameField() {
+//        boxView.addSubview(customField)
+        customField.backgroundColor = .clear
+        customField.labelView.text = "Username"
+        customField.textField.placeholder = "Enter Username"
+        customField.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.addArrangedSubview(customField)
+        
+        NSLayoutConstraint.activate([
+            customField.centerXAnchor.constraint(equalTo: boxView.centerXAnchor),
+            customField.centerYAnchor.constraint(equalTo: boxView.centerYAnchor),
+            customField.widthAnchor.constraint(equalToConstant: 300),
+            customField.heightAnchor.constraint(equalToConstant: 90)
+        ])
+    }
+    
+    func configureEmailIdField() {
+//        boxView.addSubview(customField)
+        customField.backgroundColor = .clear
+        customField.labelView.text = "Email Id"
+        customField.textField.placeholder = "Enter your Email Address"
+        customField.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.addArrangedSubview(customField)
+        
+        NSLayoutConstraint.activate([
+            customField.centerXAnchor.constraint(equalTo: boxView.centerXAnchor),
+            customField.centerYAnchor.constraint(equalTo: boxView.centerYAnchor),
+            customField.widthAnchor.constraint(equalToConstant: 300),
+            customField.heightAnchor.constraint(equalToConstant: 90)
+        ])
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     private func configureBoxView() {
         view.addSubview(boxView)
@@ -129,18 +242,18 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate(userNameLabelConstraint)
     }
     
-    private func configureUserNameField() {
-        view.addSubview(userNameTextField)
-        userNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        userNameTextFieldConstraint = [
-            userNameTextField.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 15),
-            userNameTextField.centerXAnchor.constraint(equalTo: boxView.centerXAnchor),
-            userNameTextField.widthAnchor.constraint(equalToConstant: 280),
-            userNameTextField.heightAnchor.constraint(equalToConstant: 45)
-        ]
-        NSLayoutConstraint.activate(userNameTextFieldConstraint)
-    }
+//    private func configureUserNameField() {
+//        view.addSubview(userNameTextField)
+//        userNameTextField.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        userNameTextFieldConstraint = [
+//            userNameTextField.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 15),
+//            userNameTextField.centerXAnchor.constraint(equalTo: boxView.centerXAnchor),
+//            userNameTextField.widthAnchor.constraint(equalToConstant: 280),
+//            userNameTextField.heightAnchor.constraint(equalToConstant: 45)
+//        ]
+//        NSLayoutConstraint.activate(userNameTextFieldConstraint)
+//    }
     
     private func configureEmailIdLabel() {
         emailIdLabel.text = "Email "
@@ -290,15 +403,42 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         NSLayoutConstraint.activate(endLabelConstraint)
         NSLayoutConstraint.activate(loginLabelConstraint)
     }
+    
+    private func configureCell() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let activeTextField = activeTextField
+             else {
+            
+                return
+             }
+        
+        let keyboardHeight = keyboardFrame.height
+        
+        view.frame.origin.y -= keyboardHeight
+        
+    }
+    
+    @objc private func keyboardWillHide() {
+        
+        view.superview?.superview?.frame.origin.y = 0
+    }
+    
 }
 
 extension SignUpViewController {
     
     //it allows potrait mode only
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
+//    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+//        return .portrait
+//    }
+//
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
@@ -306,4 +446,15 @@ extension SignUpViewController {
             activatePotraitConstraints()
         }
     }
+}
+
+extension SignUpViewController: UITextViewDelegate {
+    
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        activeTextField = textField
+    }
+    
+    
 }

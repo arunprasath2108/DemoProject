@@ -116,8 +116,8 @@ class LoginViewController: UIViewController {
         NSLayoutConstraint.activate([
             loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 10),
             loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            loginButton.widthAnchor.constraint(equalToConstant: 75),
-            loginButton.heightAnchor.constraint(equalToConstant: 40)
+            loginButton.widthAnchor.constraint(equalToConstant: 80),
+            loginButton.heightAnchor.constraint(equalToConstant: 35)
         ])
         
     }
